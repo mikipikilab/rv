@@ -194,7 +194,7 @@
   function minOf(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
   function standardHoursForDay(day) {
     if (day >= 1 && day <= 5) return { start: "10:00", end: "20:00", closed: false };
-    if (day === 6) return { start: "10:00", end: "14:00", closed: false };
+    if (day === 5) return { start: "10:00", end: "14:00", closed: false };
     return { start: null, end: null, closed: true }; // Sunday
   }
   function dayOfWeekISO(iso) { return new Date(iso + "T00:00:00").getDay(); }
@@ -419,3 +419,4 @@
 </script>
 </body>
 </html>
+
