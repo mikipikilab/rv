@@ -139,9 +139,9 @@
 <script>
   /* ===== I18N ===== */
   const I18N = {
-    sr:{admin:"⚙️ Admin",login_title:"Admin prijava",admin_key:"Admin ključ:",login_btn:"Prijavi se",close:"Zatvori",login_hint:"Admin ključ se provjerava na serveru. Podaci se čuvaju globalno.",set_hours:"Podesi radno vrijeme",single_date:"Pojedinačni datum",date:"Datum:",closed:"Neradni dan",from:"Od:",to:"Do:",save:"Sačuvaj izuzetak",delete:"Obriši izuzetak",closed_note:"Ako je označeno “Neradni dan”, prikazaće se “Neradni dan” bez sati.",bulk_title:"Brzo dupliranje na opseg",bulk_hint:"Kopira podešavanje iz izvornog datuma na svaki dan u opsegu.",bulk_source:"Izvorni datum:",bulk_from:"Opseg od:",bulk_to:"Opseg do:",bulk_overwrite:"Prebriši postojeće izuzetke",bulk_apply:"Primijeni na opseg",saved_overrides:"Sačuvani izuzeci",status:"Status",detail:"Detalj",action:"Akcija",open_txt:"Ordinacija je otvorena.",closed_txt:"Ordinacija je zatvorena.",closed_day:"Neradni dan.",sunday_closed:"Neradni dan (nedjelja).",hours_fmt:(s,e)=>`Radno vrijeme od ${s} do ${e} časova.`,none_saved:"Nema sačuvanih izuzetaka.",btn_delete:"Obriši",alert_saved:"Sačuvano.",alert_deleted:"Izuzetak obrisan.",alert_need_date:"Izaberi datum.",alert_need_key:"Unesi admin ključ.",alert_need_start_end:"Unesi i početak i kraj.",alert_end_after_start:"Vrijeme završetka mora biti posle početka.",confirm_sat_range:"Subota je standardno 10–14h. Želite li ipak sačuvati uneseni opseg?"},
-    ru:{admin:"⚙️ Админ",login_title:"Вход администратора",admin_key:"Админ-ключ:",login_btn:"Войти",close:"Закрыть",login_hint:"Ключ проверяется на сервере. Данные хранятся глобально.",set_hours:"Настройка рабочего времени",single_date:"Отдельная дата",date:"Дата:",closed:"Выходной день",from:"С:",to:"До:",save:"Сохранить исключение",delete:"Удалить исключение",closed_note:"Если отмечено «Выходной день», часы не отображаются.",bulk_title:"Быстрое копирование на диапазон",bulk_hint:"Копирует настройку из исходной даты на каждый день диапазона.",bulk_source:"Исходная дата:",bulk_from:"Диапазон с:",bulk_to:"Диапазон до:",bulk_overwrite:"Перезаписывать существующие",bulk_apply:"Применить к диапазону",saved_overrides:"Сохранённые исключения",status:"Статус",detail:"Деталь",action:"Действие",open_txt:"Кабинет открыт.",closed_txt:"Кабинет закрыт.",closed_day:"Выходной день.",sunday_closed:"Выходной (воскресенье).",hours_fmt:(s,e)=>`Рабочее время с ${s} до ${e}.`,none_saved:"Нет сохранённых исключений.",btn_delete:"Удалить",alert_saved:"Сохранено.",alert_deleted:"Исключение удалено.",alert_need_date:"Выберите дату.",alert_need_key:"Введите админ-ключ.",alert_need_start_end:"Укажите начало и конец.",alert_end_after_start:"Окончание должно быть позже начала.",confirm_sat_range:"Суббота обычно 10–14. Всё равно сохранить указанный интервал?"},
-    en:{admin:"⚙️ Admin",login_title:"Admin login",admin_key:"Admin key:",login_btn:"Sign in",close:"Close",login_hint:"Key is validated on server. Data is stored globally.",set_hours:"Set working hours",single_date:"Single date",date:"Date:",closed:"Closed day",from:"From:",to:"To:",save:"Save override",delete:"Delete override",closed_note:"If “Closed day” is checked, no hours will be shown.",bulk_title:"Quick duplicate to range",bulk_hint:"Copies settings from source date to each day in range.",bulk_source:"Source date:",bulk_from:"Range from:",bulk_to:"Range to:",bulk_overwrite:"Overwrite existing overrides",bulk_apply:"Apply to range",saved_overrides:"Saved overrides",status:"Status",detail:"Detail",action:"Action",open_txt:"The clinic is open.",closed_txt:"The clinic is closed.",closed_day:"Closed day.",sunday_closed:"Closed (Sunday).",hours_fmt:(s,e)=>`Working hours ${s}–${e}.`,none_saved:"No overrides saved.",btn_delete:"Delete",alert_saved:"Saved.",alert_deleted:"Override deleted.",alert_need_date:"Pick a date.",alert_need_key:"Enter admin key.",alert_need_start_end:"Enter both start and end.",alert_end_after_start:"End must be after start.",confirm_sat_range:"Saturday is usually 10–14. Still save your custom range?"}
+    sr:{admin:"⚙️ Admin",login_title:"Admin prijava",admin_key:"Admin ključ:",login_btn:"Prijavi se",close:"Zatvori",login_hint:"Admin ključ se provjerava na serveru. Podaci se čuvaju globalno.",set_hours:"Podesi radno vrijeme",single_date:"Pojedinačni datum",date:"Datum:",closed:"Neradni dan",from:"Od:",to:"Do:",save:"Sačuvaj izuzetak",delete:"Obriši izuzetak",closed_note:"Ako je označeno “Neradni dan”, prikazaće se “Neradni dan” bez sati.",bulk_title:"Brzo dupliranje na opseg",bulk_hint:"Kopira podešavanje iz izvornog datuma na svaki dan u opsegu.",bulk_source:"Izvorni datum:",bulk_from:"Opseg od:",bulk_to:"Opseg do:",bulk_overwrite:"Prebriši postojeće izuzetke",bulk_apply:"Primijeni na opseg",saved_overrides:"Sačuvani izuzeci",status:"Status",detail:"Detalj",action:"Akcija",open_txt:"Ordinacija je otvorena.",closed_txt:"Ordinacija je zatvorena.",closed_day:"Neradni dan.",sunday_closed:"Neradni dan (nedjelja).",hours_fmt:(s,e)=>`Radno vrijeme od ${s} do ${e} časova.`,none_saved:"Nema sačuvanih izuzetaka.",btn_delete:"Obriši",alert_saved:"Sačuvano.",alert_deleted:"Izuzetak obrisan.",alert_need_date:"Izaberi datum.",alert_need_key:"Unesi admin ključ.",alert_need_start_end:"Unesi i početak i kraj.",alert_end_after_start:"Vrijeme završetka mora biti posle početka.",confirm_sat_range:"Subota je standardno 10–14h. Želite li ipak sačuvati uneseni opseg?",wrong_key:"Pogrešan admin ključ.",server_key_missing:"Admin key nije podešen na serveru."},
+    ru:{admin:"⚙️ Админ",login_title:"Вход администратора",admin_key:"Админ-ключ:",login_btn:"Войти",close:"Закрыть",login_hint:"Ключ проверяется на сервере. Данные хранятся глобально.",set_hours:"Настройка рабочего времени",single_date:"Отдельная дата",date:"Дата:",closed:"Выходной день",from:"С:",to:"До:",save:"Сохранить исключение",delete:"Удалить исключение",closed_note:"Если отмечено «Выходной день», часы не отображаются.",bulk_title:"Быстрое копирование на диапазон",bulk_hint:"Копирует настройку из исходной даты на каждый день диапазона.",bulk_source:"Исходная дата:",bulk_from:"Диапазон с:",bulk_to:"Диапазон до:",bulk_overwrite:"Перезаписывать существующие",bulk_apply:"Применить к диапазону",saved_overrides:"Сохранённые исключения",status:"Статус",detail:"Деталь",action:"Действие",open_txt:"Кабинет открыт.",closed_txt:"Кабинет закрыт.",closed_day:"Выходной день.",sunday_closed:"Выходной (воскресенье).",hours_fmt:(s,e)=>`Рабочее время с ${s} до ${e}.`,none_saved:"Нет сохранённых исключений.",btn_delete:"Удалить",alert_saved:"Сохранено.",alert_deleted:"Исключение удалено.",alert_need_date:"Выберите дату.",alert_need_key:"Введите админ-ключ.",alert_need_start_end:"Укажите начало и конец.",alert_end_after_start:"Окончание должно быть позже начала.",confirm_sat_range:"Суббота обычно 10–14. Всё равно сохранить указанный интервал?",wrong_key:"Неверный админ-ключ.",server_key_missing:"На сервере не настроен Admin key."},
+    en:{admin:"⚙️ Admin",login_title:"Admin login",admin_key:"Admin key:",login_btn:"Sign in",close:"Close",login_hint:"Key is validated on server. Data is stored globally.",set_hours:"Set working hours",single_date:"Single date",date:"Date:",closed:"Closed day",from:"From:",to:"To:",save:"Save override",delete:"Delete override",closed_note:"If “Closed day” is checked, no hours will be shown.",bulk_title:"Quick duplicate to range",bulk_hint:"Copies settings from source date to each day in range.",bulk_source:"Source date:",bulk_from:"Range from:",bulk_to:"Range to:",bulk_overwrite:"Overwrite existing overrides",bulk_apply:"Apply to range",saved_overrides:"Saved overrides",status:"Status",detail:"Detail",action:"Action",open_txt:"The clinic is open.",closed_txt:"The clinic is closed.",closed_day:"Closed day.",sunday_closed:"Closed (Sunday).",hours_fmt:(s,e)=>`Working hours ${s}–${e}.`,none_saved:"No overrides saved.",btn_delete:"Delete",alert_saved:"Saved.",alert_deleted:"Override deleted.",alert_need_date:"Pick a date.",alert_need_key:"Enter admin key.",alert_need_start_end:"Enter both start and end.",alert_end_after_start:"End must be after start.",confirm_sat_range:"Saturday is usually 10–14. Still save your custom range?",wrong_key:"Wrong admin key.",server_key_missing:"Admin key not configured on server."}
   };
   const LANG_KEY = "ord_lang";
   const langSel = document.getElementById("langSel");
@@ -174,6 +174,25 @@
     });
     return r.json();
   }
+  // NEW: auth check before opening admin
+  async function apiAuthCheck(adminKey) {
+    try {
+      const r = await fetch(`/api/overrides`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-key": adminKey || "" },
+        body: "{}"
+      });
+      if (r.status === 400) return { ok: true }; // authorized, but "date required" (expected)
+      if (r.status === 401) return { ok: false, error: "unauthorized" };
+      const j = await r.json().catch(()=>({}));
+      if (r.status === 500 && (j?.error||"").toLowerCase().includes("admin key not configured")) {
+        return { ok: false, error: "server_key_missing" };
+      }
+      return { ok: false, error: j?.error || ("HTTP "+r.status) };
+    } catch (e) {
+      return { ok: false, error: e?.message || "network" };
+    }
+  }
   async function apiDeleteOverride(date, adminKey) {
     const r = await fetch(`/api/overrides?date=${encodeURIComponent(date)}`, {
       method: "DELETE",
@@ -184,7 +203,6 @@
 
   /* ===== UTIL ===== */
   const $ = (sel) => document.querySelector(sel);
-  // FIX: local date formatting to avoid UTC shifts on Saturdays
   function fmtDateISO(d){
     const y=d.getFullYear();
     const m=String(d.getMonth()+1).padStart(2,"0");
@@ -194,7 +212,7 @@
   function minOf(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
   function standardHoursForDay(day) {
     if (day >= 1 && day <= 5) return { start: "10:00", end: "20:00", closed: false };
-    if (day === 5) return { start: "10:00", end: "14:00", closed: false };
+    if (day === 6) return { start: "10:00", end: "14:00", closed: false };
     return { start: null, end: null, closed: true }; // Sunday
   }
   function dayOfWeekISO(iso) { return new Date(iso + "T00:00:00").getDay(); }
@@ -265,6 +283,15 @@
     const L = I18N[langSel.value] || I18N.sr;
     adminKey = $("#adminPass").value.trim();
     if (!adminKey) return alert(L.alert_need_key);
+
+    // Validate with server before opening admin UI
+    const auth = await apiAuthCheck(adminKey);
+    if (!auth.ok) {
+      if (auth.error === "unauthorized") return alert(L.wrong_key);
+      if (auth.error === "server_key_missing") return alert(L.server_key_missing);
+      return alert(auth.error || L.wrong_key);
+    }
+
     loginView.style.display = "none";
     formView.style.display = "block";
     if (!$("#dateInput").value) $("#dateInput").value = fmtDateISO(new Date());
@@ -275,7 +302,6 @@
     const iso = $("#dateInput").value;
     if (!iso) return;
     const d = new Date(iso + "T00:00:00");
-    // FIX: unwrap response { "<iso>": value }
     const resp = await apiGetOverrides(iso);
     const base = (resp && resp[iso]) ?? standardHoursForDay(d.getDay());
     $("#closedCheckbox").checked = !!base.closed;
@@ -386,7 +412,6 @@
     const overwrite = document.getElementById("bulkOverwrite").checked;
     if (!src || !from || !to) return alert(L.alert_need_date);
 
-    // FIX: unwrap single-date response
     const resp = await apiGetOverrides(src);
     let base = (resp && resp[src]) || standardHoursForDay(dayOfWeekISO(src));
     if (!base.closed) {
@@ -419,4 +444,3 @@
 </script>
 </body>
 </html>
-
