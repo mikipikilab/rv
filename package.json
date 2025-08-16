@@ -1,0 +1,8 @@
+{
+  "name": "ordinacija-radno-vrijeme",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/blobs": "^6.5.0"
+  }
+}

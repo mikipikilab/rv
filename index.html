@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Status ordinacije</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { background:#000; color:#fff; font-family: system-ui, Arial, sans-serif; margin:0; text-align:center; padding:20px; }
+  .status-img { display:block; width:250px; margin:20px auto; animation:swing 2s ease-in-out infinite; }
+  h1 { margin:10px 0; font-size:22px; }
+  p { margin:0; font-size:16px; opacity:.95; }
+  .topbar { display:flex; justify-content:space-between; align-items:center; gap:10px; max-width:980px; margin:0 auto 6px; }
+  .admin-link { color:#4ade80; cursor:pointer; text-decoration:underline; font-weight:700; }
+  .lang { background:#111; color:#fff; border:1px solid #333; border-radius:8px; padding:6px 10px; }
+  @keyframes swing { 0%{transform:rotate(-5deg);} 50%{transform:rotate(5deg);} 100%{transform:rotate(-5deg);} }
+
+  .modal { position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.55); padding:20px; }
+  .modal.open { display:grid; }
+  .card { width:min(100%, 700px); background:#111; border:1px solid #333; border-radius:14px; padding:16px; text-align:left; }
+  .row { display:flex; gap:10px; align-items:center; margin:8px 0; flex-wrap:wrap; }
+  label { font-size:14px; }
+  input[type="password"], input[type="date"], input[type="time"] {
+    background:#000; color:#fff; border:1px solid #444; border-radius:8px; padding:8px 10px;
+  }
+  input[type="checkbox"] { transform:scale(1.2); }
+  .btn { background:#4ade80; color:#000; border:none; border-radius:10px; padding:10px 14px; font-weight:800; cursor:pointer; }
+  .btn.secondary { background:#222; color:#fff; border:1px solid #444; }
+  .muted { opacity:.75; font-size:13px; }
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th, td { padding:8px; border-bottom:1px solid #333; font-size:14px; }
+  th { text-align:left; opacity:.8; }
+  .chip { display:inline-block; padding:2px 8px; border-radius:999px; background:#222; border:1px solid #333; font-size:12px; }
+  .section-title { margin:12px 0 4px; font-size:16px; }
+  .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+  @media (max-width:700px){ .grid-2{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <select id="langSel" class="lang" aria-label="Language">
+      <option value="sr">Srpski</option>
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
+    <a class="admin-link" id="openAdmin" data-i18n="admin">⚙️ Admin</a>
+  </div>
+
+  <img id="statusImg" class="status-img" src="close.png" alt="Status ordinacije" />
+  <h1 id="statusText">Ordinacija je zatvorena.</h1>
+  <p id="workHours"></p>
+
+  <!-- ADMIN MODAL -->
+  <div class="modal" id="adminModal" aria-hidden="true">
+    <div class="card">
+      <div id="loginView">
+        <h2 data-i18n="login_title">Admin prijava</h2>
+        <div class="row">
+          <label for="adminPass" data-i18n="admin_key">Admin ključ:</label>
+          <input type="password" id="adminPass" placeholder="Unesite admin ključ" />
+          <button class="btn" id="loginBtn" data-i18n="login_btn">Prijavi se</button>
+          <button class="btn secondary" id="closeModal1" data-i18n="close">Zatvori</button>
+        </div>
+        <p class="muted" data-i18n="login_hint">Admin ključ se provjerava na serveru. Podaci se čuvaju globalno.</p>
+      </div>
+
+      <div id="formView" style="display:none;">
+        <div class="row" style="justify-content:space-between;">
+          <h2 class="section-title" data-i18n="set_hours">Podesi radno vrijeme</h2>
+          <button class="btn secondary" id="closeModal2" data-i18n="close">Zatvori</button>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <h3 class="section-title" data-i18n="single_date">Pojedinačni datum</h3>
+            <div class="row">
+              <label for="dateInput" style="min-width:110px;" data-i18n="date">Datum:</label>
+              <input type="date" id="dateInput" />
+            </div>
+
+            <div class="row">
+              <label><input type="checkbox" id="closedCheckbox" /> <span data-i18n="closed">Neradni dan</span></label>
+            </div>
+
+            <div id="timeRow" class="row">
+              <label for="startTime" style="min-width:110px;" data-i18n="from">Od:</label>
+              <input type="time" id="startTime" value="10:00" />
+              <label for="endTime" style="min-width:60px;" data-i18n="to">Do:</label>
+              <input type="time" id="endTime" value="20:00" />
+            </div>
+
+            <div class="row">
+              <button class="btn" id="saveOverride" data-i18n="save">Sačuvaj izuzetak</button>
+              <button class="btn secondary" id="deleteOverride" data-i18n="delete">Obriši izuzetak</button>
+            </div>
+            <p class="muted" data-i18n="closed_note">Ako je označeno “Neradni dan”, prikazaće se “Neradni dan” bez sati.</p>
+          </div>
+
+          <div>
+            <h3 class="section-title" data-i18n="bulk_title">Brzo dupliranje na opseg</h3>
+            <p class="muted" data-i18n="bulk_hint">Kopira podešavanje iz izvornog datuma na svaki dan u opsegu.</p>
+            <div class="row">
+              <label style="min-width:140px;" for="bulkSource" data-i18n="bulk_source">Izvorni datum:</label>
+              <input type="date" id="bulkSource" />
+            </div>
+            <div class="row">
+              <label style="min-width:140px;" for="bulkFrom" data-i18n="bulk_from">Opseg od:</label>
+              <input type="date" id="bulkFrom" />
+            </div>
+            <div class="row">
+              <label style="min-width:140px;" for="bulkTo" data-i18n="bulk_to">Opseg do:</label>
+              <input type="date" id="bulkTo" />
+            </div>
+            <div class="row">
+              <label><input type="checkbox" id="bulkOverwrite" checked /> <span data-i18n="bulk_overwrite">Prebriši postojeće izuzetke</span></label>
+            </div>
+            <div class="row">
+              <button class="btn" id="bulkApply" data-i18n="bulk_apply">Primijeni na opseg</button>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="section-title" data-i18n="saved_overrides">Sačuvani izuzeci</h3>
+        <table id="overridesTable">
+          <thead>
+            <tr>
+              <th data-i18n="date">Datum</th>
+              <th data-i18n="status">Status</th>
+              <th data-i18n="detail">Detalj</th>
+              <th data-i18n="action">Akcija</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* ===== I18N ===== */
+  const I18N = {
+    sr:{admin:"⚙️ Admin",login_title:"Admin prijava",admin_key:"Admin ključ:",login_btn:"Prijavi se",close:"Zatvori",login_hint:"Admin ključ se provjerava na serveru. Podaci se čuvaju globalno.",set_hours:"Podesi radno vrijeme",single_date:"Pojedinačni datum",date:"Datum:",closed:"Neradni dan",from:"Od:",to:"Do:",save:"Sačuvaj izuzetak",delete:"Obriši izuzetak",closed_note:"Ako je označeno “Neradni dan”, prikazaće se “Neradni dan” bez sati.",bulk_title:"Brzo dupliranje na opseg",bulk_hint:"Kopira podešavanje iz izvornog datuma na svaki dan u opsegu.",bulk_source:"Izvorni datum:",bulk_from:"Opseg od:",bulk_to:"Opseg do:",bulk_overwrite:"Prebriši postojeće izuzetke",bulk_apply:"Primijeni na opseg",saved_overrides:"Sačuvani izuzeci",status:"Status",detail:"Detalj",action:"Akcija",open_txt:"Ordinacija je otvorena.",closed_txt:"Ordinacija je zatvorena.",closed_day:"Neradni dan.",sunday_closed:"Neradni dan (nedjelja).",hours_fmt:(s,e)=>`Radno vrijeme od ${s} do ${e} časova.`,none_saved:"Nema sačuvanih izuzetaka.",btn_delete:"Obriši",alert_saved:"Sačuvano.",alert_deleted:"Izuzetak obrisan.",alert_need_date:"Izaberi datum.",alert_need_key:"Unesi admin ključ.",alert_need_start_end:"Unesi i početak i kraj.",alert_end_after_start:"Vrijeme završetka mora biti posle početka.",confirm_sat_range:"Subota je standardno 10–14h. Želite li ipak sačuvati uneseni opseg?"},
+    ru:{admin:"⚙️ Админ",login_title:"Вход администратора",admin_key:"Админ-ключ:",login_btn:"Войти",close:"Закрыть",login_hint:"Ключ проверяется на сервере. Данные хранятся глобально.",set_hours:"Настройка рабочего времени",single_date:"Отдельная дата",date:"Дата:",closed:"Выходной день",from:"С:",to:"До:",save:"Сохранить исключение",delete:"Удалить исключение",closed_note:"Если отмечено «Выходной день», часы не отображаются.",bulk_title:"Быстрое копирование на диапазон",bulk_hint:"Копирует настройку из исходной даты на каждый день диапазона.",bulk_source:"Исходная дата:",bulk_from:"Диапазон с:",bulk_to:"Диапазон до:",bulk_overwrite:"Перезаписывать существующие",bulk_apply:"Применить к диапазону",saved_overrides:"Сохранённые исключения",status:"Статус",detail:"Деталь",action:"Действие",open_txt:"Кабинет открыт.",closed_txt:"Кабинет закрыт.",closed_day:"Выходной день.",sunday_closed:"Выходной (воскресенье).",hours_fmt:(s,e)=>`Рабочее время с ${s} до ${e}.`,none_saved:"Нет сохранённых исключений.",btn_delete:"Удалить",alert_saved:"Сохранено.",alert_deleted:"Исключение удалено.",alert_need_date:"Выберите дату.",alert_need_key:"Введите админ-ключ.",alert_need_start_end:"Укажите начало и конец.",alert_end_after_start:"Окончание должно быть позже начала.",confirm_sat_range:"Суббота обычно 10–14. Всё равно сохранить указанный интервал?"},
+    en:{admin:"⚙️ Admin",login_title:"Admin login",admin_key:"Admin key:",login_btn:"Sign in",close:"Close",login_hint:"Key is validated on server. Data is stored globally.",set_hours:"Set working hours",single_date:"Single date",date:"Date:",closed:"Closed day",from:"From:",to:"To:",save:"Save override",delete:"Delete override",closed_note:"If “Closed day” is checked, no hours will be shown.",bulk_title:"Quick duplicate to range",bulk_hint:"Copies settings from source date to each day in range.",bulk_source:"Source date:",bulk_from:"Range from:",bulk_to:"Range to:",bulk_overwrite:"Overwrite existing overrides",bulk_apply:"Apply to range",saved_overrides:"Saved overrides",status:"Status",detail:"Detail",action:"Action",open_txt:"The clinic is open.",closed_txt:"The clinic is closed.",closed_day:"Closed day.",sunday_closed:"Closed (Sunday).",hours_fmt:(s,e)=>`Working hours ${s}–${e}.`,none_saved:"No overrides saved.",btn_delete:"Delete",alert_saved:"Saved.",alert_deleted:"Override deleted.",alert_need_date:"Pick a date.",alert_need_key:"Enter admin key.",alert_need_start_end:"Enter both start and end.",alert_end_after_start:"End must be after start.",confirm_sat_range:"Saturday is usually 10–14. Still save your custom range?"}
+  };
+  const LANG_KEY = "ord_lang";
+  const langSel = document.getElementById("langSel");
+  function tkey(el){ return el.getAttribute("data-i18n"); }
+  function applyI18N() {
+    const L = I18N[langSel.value] || I18N.sr;
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const k = tkey(el);
+      if (k && typeof L[k] === "string") el.textContent = L[k];
+    });
+    document.getElementById("adminPass").placeholder =
+      (langSel.value==='en'?'Enter admin key':langSel.value==='ru'?'Введите админ-ключ':'Unesite admin ključ');
+    renderStatus();
+    refreshOverridesTable();
+  }
+  langSel.value = localStorage.getItem(LANG_KEY) || "sr";
+  langSel.addEventListener("change", ()=>{ localStorage.setItem(LANG_KEY, langSel.value); applyI18N(); });
+
+  /* ===== API ===== */
+  async function apiGetOverrides(date) {
+    const q = date ? `?date=${encodeURIComponent(date)}` : "";
+    const r = await fetch(`/api/overrides${q}`);
+    return r.json();
+  }
+  async function apiSaveOverride(payload, adminKey) {
+    const r = await fetch(`/api/overrides`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-key": adminKey || "" },
+      body: JSON.stringify(payload)
+    });
+    return r.json();
+  }
+  async function apiDeleteOverride(date, adminKey) {
+    const r = await fetch(`/api/overrides?date=${encodeURIComponent(date)}`, {
+      method: "DELETE",
+      headers: { "x-admin-key": adminKey || "" }
+    });
+    return r.json();
+  }
+
+  /* ===== UTIL ===== */
+  const $ = (sel) => document.querySelector(sel);
+  function fmtDateISO(d) { return d.toISOString().split("T")[0]; }
+  function minOf(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
+  function standardHoursForDay(day) {
+    if (day >= 1 && day <= 5) return { start: "10:00", end: "20:00", closed: false };
+    if (day === 6) return { start: "10:00", end: "14:00", closed: false };
+    return { start: null, end: null, closed: true }; // Sunday
+  }
+  function dayOfWeekISO(iso) { return new Date(iso + "T00:00:00").getDay(); }
+
+  /* ===== STATE ===== */
+  let overrides = {}; // { "YYYY-MM-DD": {closed, start?, end?} }
+  let adminKey = "";
+
+  /* ===== STATUS ===== */
+  async function loadOverrides() {
+    overrides = await apiGetOverrides();
+    refreshOverridesTable();
+  }
+
+  async function renderStatus() {
+    const L = I18N[langSel.value] || I18N.sr;
+    const now = new Date();
+    const dow = now.getDay();
+    const dateISO = fmtDateISO(now);
+    const plan = overrides?.[dateISO] ?? standardHoursForDay(dow);
+
+    const img = $("#statusImg");
+    const txt = $("#statusText");
+    const wh  = $("#workHours");
+
+    if (plan.closed) {
+      img.src = "close.png";
+      txt.textContent = (dow === 0 ? L.sunday_closed : L.closed_day);
+      wh.textContent = L.closed_txt;
+      return;
+    }
+    const nowMin = now.getHours()*60 + now.getMinutes();
+    const startMin = minOf(plan.start);
+    const endMin   = minOf(plan.end);
+
+    if (nowMin >= startMin && nowMin < endMin) {
+      img.src = "open.png";
+      txt.textContent = L.open_txt;
+    } else {
+      img.src = "close.png";
+      txt.textContent = L.closed_txt;
+    }
+    wh.textContent = L.hours_fmt(plan.start, plan.end);
+  }
+
+  /* ===== ADMIN UI ===== */
+  const adminModal = $("#adminModal");
+  const loginView  = $("#loginView");
+  const formView   = $("#formView");
+  const overridesTable = $("#overridesTable tbody");
+
+  $("#openAdmin").addEventListener("click", () => {
+    adminModal.classList.add("open");
+    adminModal.setAttribute("aria-hidden","false");
+    loginView.style.display = "block";
+    formView.style.display = "none";
+    $("#adminPass").value = "";
+  });
+  function closeModal() {
+    adminModal.classList.remove("open");
+    adminModal.setAttribute("aria-hidden","true");
+  }
+  $("#closeModal1").addEventListener("click", closeModal);
+  $("#closeModal2").addEventListener("click", closeModal);
+  adminModal.addEventListener("click", (e) => { if (e.target === adminModal) closeModal(); });
+
+  $("#loginBtn").addEventListener("click", async () => {
+    const L = I18N[langSel.value] || I18N.sr;
+    adminKey = $("#adminPass").value.trim();
+    if (!adminKey) return alert(L.alert_need_key);
+    loginView.style.display = "none";
+    formView.style.display = "block";
+    if (!$("#dateInput").value) $("#dateInput").value = fmtDateISO(new Date());
+    await preloadForSelectedDate();
+  });
+
+  async function preloadForSelectedDate() {
+    const iso = $("#dateInput").value;
+    if (!iso) return;
+    const d = new Date(iso + "T00:00:00");
+    const base = (await apiGetOverrides(iso)) ?? standardHoursForDay(d.getDay());
+    $("#closedCheckbox").checked = !!base.closed;
+    $("#timeRow").style.display = base.closed ? "none" : "flex";
+    if (!base.closed) {
+      $("#startTime").value = base.start || (d.getDay()===6?"10:00":"10:00");
+      $("#endTime").value   = base.end   || (d.getDay()===6?"14:00":"20:00");
+    }
+  }
+
+  $("#dateInput").addEventListener("change", preloadForSelectedDate);
+  $("#closedCheckbox").addEventListener("change", () => {
+    $("#timeRow").style.display = $("#closedCheckbox").checked ? "none" : "flex";
+  });
+
+  function validateSaturdayRangeIfNeeded(iso, start, end) {
+    const L = I18N[langSel.value] || I18N.sr;
+    const dow = dayOfWeekISO(iso);
+    if (dow !== 6) return true;
+    const s = minOf(start), e = minOf(end);
+    const stdS = minOf("10:00"), stdE = minOf("14:00");
+    if (s === stdS && e === stdE) return true;
+    if (s >= stdS && e <= stdE && e > s) return true;
+    return confirm(L.confirm_sat_range);
+  }
+
+  $("#saveOverride").addEventListener("click", async () => {
+    const L = I18N[langSel.value] || I18N.sr;
+    const iso = $("#dateInput").value;
+    if (!iso) return alert(L.alert_need_date);
+    const closed = $("#closedCheckbox").checked;
+    const payload = { date: iso, closed };
+
+    if (!closed) {
+      const start = $("#startTime").value;
+      const end   = $("#endTime").value;
+      if (!start || !end) return alert(L.alert_need_start_end);
+      const toMin = (t)=>{const [h,m]=t.split(":").map(Number);return h*60+m;};
+      if (toMin(end) <= toMin(start)) return alert(L.alert_end_after_start);
+      if (!validateSaturdayRangeIfNeeded(iso, start, end)) return;
+      payload.start = start;
+      payload.end   = end;
+    }
+
+    const res = await apiSaveOverride(payload, adminKey);
+    if (res?.error) return alert(res.error);
+    alert(L.alert_saved);
+    await loadOverrides();
+    await preloadForSelectedDate();
+    await renderStatus();
+  });
+
+  $("#deleteOverride").addEventListener("click", async () => {
+    const L = I18N[langSel.value] || I18N.sr;
+    const iso = $("#dateInput").value;
+    if (!iso) return;
+    const res = await apiDeleteOverride(iso, adminKey);
+    if (res?.error) return alert(res.error);
+    alert(L.alert_deleted);
+    await loadOverrides();
+    await preloadForSelectedDate();
+    await renderStatus();
+  });
+
+  function refreshOverridesTable() {
+    const L = I18N[langSel.value] || I18N.sr;
+    overridesTable.innerHTML = "";
+    const entries = Object.entries(overrides || {}).sort(([a],[b]) => a.localeCompare(b));
+    if (entries.length === 0) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 4; td.className = "muted"; td.textContent = L.none_saved;
+      tr.appendChild(td); overridesTable.appendChild(tr); return;
+    }
+    for (const [date, val] of entries) {
+      const tr = document.createElement("tr");
+      const tdDate = document.createElement("td"); tdDate.textContent = date;
+      const tdStatus = document.createElement("td"); tdStatus.innerHTML = val?.closed ? '<span class="chip">Neradni</span>' : '<span class="chip">Radi</span>';
+      const tdDetail = document.createElement("td"); tdDetail.textContent = val?.closed ? "—" : `${val.start}–${val.end}`;
+      const tdAct = document.createElement("td");
+      const btn = document.createElement("button");
+      btn.className = "btn secondary";
+      btn.textContent = I18N[langSel.value]?.btn_delete || "Obriši";
+      btn.addEventListener("click", async () => {
+        const res = await apiDeleteOverride(date, adminKey);
+        if (res?.error) return alert(res.error);
+        await loadOverrides(); await renderStatus();
+      });
+      tdAct.appendChild(btn);
+      tr.append(tdDate, tdStatus, tdDetail, tdAct);
+      overridesTable.appendChild(tr);
+    }
+  }
+
+  function datesBetween(fromISO, toISO) {
+    const out = [];
+    let d = new Date(fromISO + "T00:00:00");
+    const end = new Date(toISO + "T00:00:00");
+    for (; d <= end; d.setDate(d.getDate()+1)) out.push(fmtDateISO(d));
+    return out;
+  }
+
+  document.getElementById("bulkApply").addEventListener("click", async ()=>{
+    const L = I18N[langSel.value] || I18N.sr;
+    const src = document.getElementById("bulkSource").value;
+    const from = document.getElementById("bulkFrom").value;
+    const to = document.getElementById("bulkTo").value;
+    const overwrite = document.getElementById("bulkOverwrite").checked;
+    if (!src || !from || !to) return alert(L.alert_need_date);
+
+    let base = await apiGetOverrides(src);
+    if (!base) base = standardHoursForDay(dayOfWeekISO(src));
+    if (!base.closed) {
+      const ok = validateSaturdayRangeIfNeeded(src, base.start, base.end);
+      if (!ok) return;
+    }
+
+    const days = datesBetween(from, to);
+    for (const day of days) {
+      if (!overwrite && overrides[day]) continue;
+      const payload = { date: day, closed: !!base.closed };
+      if (!base.closed) { payload.start = base.start; payload.end = base.end; }
+      if (!payload.closed && dayOfWeekISO(day) === 6) {
+        const ok = validateSaturdayRangeIfNeeded(day, payload.start, payload.end);
+        if (!ok) continue;
+      }
+      const res = await apiSaveOverride(payload, adminKey);
+      if (res?.error) { alert(res.error); break; }
+    }
+    await loadOverrides(); await renderStatus();
+    alert(L.alert_saved);
+  });
+
+  (async () => {
+    applyI18N();
+    await loadOverrides();
+    await renderStatus();
+    setInterval(renderStatus, 60000);
+  })();
+</script>
+</body>
+</html>
