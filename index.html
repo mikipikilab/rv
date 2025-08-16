@@ -184,7 +184,13 @@
 
   /* ===== UTIL ===== */
   const $ = (sel) => document.querySelector(sel);
-  function fmtDateISO(d) { return d.toISOString().split("T")[0]; }
+  // FIX: local date formatting to avoid UTC shifts on Saturdays
+  function fmtDateISO(d){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
   function minOf(hhmm){ const [h,m]=hhmm.split(":").map(Number); return h*60+m; }
   function standardHoursForDay(day) {
     if (day >= 1 && day <= 5) return { start: "10:00", end: "20:00", closed: false };
@@ -269,7 +275,9 @@
     const iso = $("#dateInput").value;
     if (!iso) return;
     const d = new Date(iso + "T00:00:00");
-    const base = (await apiGetOverrides(iso)) ?? standardHoursForDay(d.getDay());
+    // FIX: unwrap response { "<iso>": value }
+    const resp = await apiGetOverrides(iso);
+    const base = (resp && resp[iso]) ?? standardHoursForDay(d.getDay());
     $("#closedCheckbox").checked = !!base.closed;
     $("#timeRow").style.display = base.closed ? "none" : "flex";
     if (!base.closed) {
@@ -378,8 +386,9 @@
     const overwrite = document.getElementById("bulkOverwrite").checked;
     if (!src || !from || !to) return alert(L.alert_need_date);
 
-    let base = await apiGetOverrides(src);
-    if (!base) base = standardHoursForDay(dayOfWeekISO(src));
+    // FIX: unwrap single-date response
+    const resp = await apiGetOverrides(src);
+    let base = (resp && resp[src]) || standardHoursForDay(dayOfWeekISO(src));
     if (!base.closed) {
       const ok = validateSaturdayRangeIfNeeded(src, base.start, base.end);
       if (!ok) return;
