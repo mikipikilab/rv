@@ -34,6 +34,15 @@
   .section-title { margin:12px 0 4px; font-size:16px; }
   .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
   @media (max-width:700px){ .grid-2{ grid-template-columns:1fr; } }
+  button.speaker-btn {
+  position:absolute; top:80px; left:110px; padding:10px 10px; border-radius:20px;
+  border:2px solid rgba(255,255,255,0.6); background:rgba(0,0,0,0.4);
+  cursor:pointer; font-size:1.5rem; color:#fff; font-weight:800;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2); backdrop-filter:blur(4px);
+  transition:background .2s ease, color .2s ease; z-index:9999;
+}
+button.speaker-btn:hover { background:rgba(0,0,0,0.6); }
+
 </style>
 </head>
 <body>
@@ -43,6 +52,12 @@
       <option value="en">&#x1F1EC;&#x1F1E7;</option>
       <option value="ru">&#x1F1F7;&#x1F1FA;</option>
     </select>
+   <button class="speaker-btn" 
+        type="button" 
+        aria-label="IDI NA GLASOVNU" 
+        onclick="window.open('https://radnovrijeme1.onrender.com/', '_blank')">
+  🔊
+</button>
     <a class="admin-link" id="openAdmin" data-i18n="admin">A</a>
   </div>
 
@@ -450,6 +465,7 @@
 </script>
 </body>
 </html>
+
 
 
 
