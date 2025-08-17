@@ -50,9 +50,19 @@
   <h1 id="statusText">Ordinacija je zatvorena.</h1>
   <p id="workHours"></p>
   
-<div style="overflow:hidden; height:250px; position:relative;">
-  <iframe src="https://radnovrijeme1.onrender.com/" 
-          style="width:100%; height:600px; border:none; position:relative; top:-320px;">
+<!-- PRIKAZ OD DNA PREMA GORE -->
+<div style="position:relative; overflow:hidden; height:300px;">
+  <iframe
+    src="https://radnovrijeme1.onrender.com/"
+    style="
+      position:absolute;
+      left:0;
+      bottom:0;          /* drži prikaz usidren za DNO */
+      width:100%;
+      height:1000px;     /* dovoljno veliko da 'ima šta' da se reže */
+      border:none;
+      transform: translateY(300px); /* kao margin-top:-300px ali od DNA */
+    ">
   </iframe>
 </div>
 
@@ -450,6 +460,7 @@
 </script>
 </body>
 </html>
+
 
 
 
